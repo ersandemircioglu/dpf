@@ -1,0 +1,49 @@
+version: '2'
+
+services:
+  rabbitmq:
+    image: rabbitmq:management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+        
+#  logstash:
+#    build: elk/logstash/
+#    container_name: logstash
+#    ports:
+#      - "5044:5044"
+#    links:
+#      - elasticsearch
+#      
+#  elasticsearch:
+#    image: elasticsearch:8.4.3
+#    container_name: elasticsearch
+#    restart: always
+#    environment:
+#      - xpack.security.enabled=false
+#      - discovery.type=single-node
+#    ulimits: 
+#      memlock:
+#        soft: -1 
+#        hard: -1
+#      nofile:
+#        soft: 65536
+#        hard: 65536
+#    cap_add: 
+#      - IPC_LOCK
+#    ports:
+#      - "9200:9200"
+#      - "9300:9300"
+#      
+#  kibana:
+#    container_name: kibana
+#    image: kibana:8.4.3
+#    restart: always
+#    environment:
+#      SERVER_NAME: kibana
+#      ELASTICSEARCH_HOSTS: http://elasticsearch:9200
+#    ports:
+#      - "5601:5601"
+#    depends_on:
+#      - elasticsearch

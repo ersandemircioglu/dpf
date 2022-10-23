@@ -1,0 +1,4 @@
+dpf:
+  ingestion:
+    incoming_folder: ${HOME}/dpf/ingestion/incoming_dir
+    queue: incoming_file_queue
