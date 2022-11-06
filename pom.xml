@@ -12,5 +12,7 @@
         <module>parent</module>
         <module>config</module>
         <module>ingestion</module>
+        <module>catalogue</module>
+        <module>common</module>
     </modules>
 </project>

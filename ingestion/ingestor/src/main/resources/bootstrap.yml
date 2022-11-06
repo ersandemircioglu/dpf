@@ -1,6 +1,6 @@
 spring:
   application:
-    name: ingestion-ingestor
+    name: archive
   cloud:
     config:
       uri: http://localhost:8888

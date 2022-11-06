@@ -9,7 +9,6 @@ import java.nio.file.WatchEvent;
 import java.nio.file.WatchKey;
 import java.nio.file.WatchService;
 
-import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -21,11 +20,11 @@ public class FileWatcher {
     @Value("${dpf.ingestion.incoming_folder}")
     private String incomingFolder;
 
-    @Autowired
-    private RabbitTemplate template;
+    @Value("${dpf.ingestion.queue}")
+    private String queueName;
 
     @Autowired
-    private Queue queue;
+    private RabbitTemplate template;
 
     public FileWatcher() {
         run();
@@ -41,14 +40,13 @@ public class FileWatcher {
 
                     Path path = Paths.get(incomingFolder);
 
-                    path.register(watchService, StandardWatchEventKinds.ENTRY_CREATE, StandardWatchEventKinds.ENTRY_DELETE,
-                            StandardWatchEventKinds.ENTRY_MODIFY);
+                    path.register(watchService, StandardWatchEventKinds.ENTRY_CREATE);
 
                     WatchKey key;
                     while ((key = watchService.take()) != null) {
                         for (WatchEvent<?> event : key.pollEvents()) {
                             System.out.println("Event kind:" + event.kind() + ". File affected: " + event.context() + ".");
-                            template.convertAndSend(queue.getName(), event.context().toString());
+                            template.convertAndSend(queueName, event.context().toString());
                         }
                         key.reset();
                     }

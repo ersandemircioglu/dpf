@@ -1,0 +1,22 @@
+version: '3.1'
+
+services:
+  rabbitmq:
+    image: rabbitmq:management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+      
+#https://stackoverflow.com/questions/63623075/how-to-run-commands-from-docker-compose-yml-to-start-couchdb#63624336
+  initializer:
+    image: curlimages/curl
+    deploy:
+      restart_policy:
+        condition: on-failure
+    depends_on:
+      - rabbitmq
+    command: ["sh","-c",
+      "sleep 15 
+      && curl -u guest:guest -X PUT rabbitmq:15672/api/queues/%2f/incoming_file_queue -H 'Content-Type: application/json' -d '{\"auto_delete\":\"false\",\"durable\":\"true\"}'
+      && curl -u guest:guest -X PUT rabbitmq:15672/api/queues/%2f/incoming_file_queue2 -H 'Content-Type: application/json' -d '{\"auto_delete\":\"false\",\"durable\":\"true\"}'"]

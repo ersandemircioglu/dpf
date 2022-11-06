@@ -1,0 +1,42 @@
+version: '3.1'
+services: 
+  couchdb:
+    image: couchdb:latest
+    container_name: couchdb
+    ports:
+      - "5984:5984"
+    environment:
+      - COUCHDB_USER=admin
+      - COUCHDB_PASSWORD=password
+#    volumes:
+#        - ./dbdata:/opt/couchdb/data
+
+#https://stackoverflow.com/questions/63623075/how-to-run-commands-from-docker-compose-yml-to-start-couchdb#63624336
+  initializer:
+    image: curlimages/curl
+    deploy:
+      restart_policy:
+        condition: on-failure
+    depends_on:
+      - couchdb
+    command: ["sh","-c","sleep 15 && curl -u admin:password -X PUT couchdb:5984/_users &&  curl -u admin:password -X PUT couchdb:5984/product_database"]
+
+
+#  mongo:
+#    image: mongo
+#    container_name: mongo
+#    restart: always
+#    environment:
+#      MONGO_INITDB_ROOT_USERNAME: root
+#      MONGO_INITDB_ROOT_PASSWORD: example
+#
+#  mongo-express:
+#    image: mongo-express
+#    container_name: mongo-express
+#    restart: always
+#    ports:
+#      - 8081:8081
+#    environment:
+#      ME_CONFIG_MONGODB_ADMINUSERNAME: root
+#      ME_CONFIG_MONGODB_ADMINPASSWORD: example
+#      ME_CONFIG_MONGODB_URL: mongodb://root:example@mongo:27017/
