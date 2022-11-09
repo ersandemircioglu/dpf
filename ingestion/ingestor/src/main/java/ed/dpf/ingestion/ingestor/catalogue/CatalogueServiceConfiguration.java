@@ -1,4 +1,4 @@
-package ed.dpf.ingestion.ingestor;
+package ed.dpf.ingestion.ingestor.catalogue;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;

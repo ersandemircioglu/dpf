@@ -1,4 +1,4 @@
-package ed.dpf.ingestion.ingestor;
+package ed.dpf.ingestion.ingestor.catalogue;
 
 import java.util.Map;
 
