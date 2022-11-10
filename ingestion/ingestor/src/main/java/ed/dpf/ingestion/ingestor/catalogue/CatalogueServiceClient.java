@@ -15,7 +15,7 @@ public interface CatalogueServiceClient {
     String getProducts();
 
     @RequestMapping(method = RequestMethod.PUT, value = "/product_database/{id}")
-    String addProduct(@PathVariable("id") String id, Map<String, String> fields);
+    String addProduct(@PathVariable("id") String id, Map<String, Object> fields);
 
     @RequestMapping(method = RequestMethod.POST, value = "/product_database/_find", consumes = MediaType.APPLICATION_JSON_VALUE)
     String findProduct(@RequestBody String searchValue);

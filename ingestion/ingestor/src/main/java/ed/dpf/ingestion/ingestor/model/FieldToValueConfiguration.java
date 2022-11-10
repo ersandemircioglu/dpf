@@ -9,8 +9,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class FieldToValueMap {
-    private String field;
+public class FieldToValueConfiguration {
     private ValueType valueType;
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private String format;

@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,14 +19,13 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 @Slf4j
 public class FileIngestor {
+    @Value("${dpf.ingestion.config_folder}")
+    private String configFolderPath = "/home/user/dpf/ingestion/config/";
 
     @Autowired
     CatalogueServiceClient catalogueServiceClient;
 
-    @Value("${dpf.ingestion.config_folder}")
-    private String configFolderPath;
-
-    private List<IngestorConfiguration> configList = new ArrayList<>();
+    private List<Ingestor> ingestorList = new ArrayList<>();
 
     public FileIngestor() {
         readConfigurationFiles();
@@ -38,7 +38,7 @@ public class FileIngestor {
             try {
                 log.info("Config file \"{}\" is being parsed.", configFile.getAbsolutePath());
                 IngestorConfiguration configuration = objectMapper.readValue(configFile, IngestorConfiguration.class);
-                configList.add(configuration);
+                ingestorList.add(new Ingestor(configuration));
             } catch (IOException e) {
                 log.error("Config file \"{}\" cannot be parsed.", configFile.getAbsolutePath(), e);
             }
@@ -46,8 +46,12 @@ public class FileIngestor {
     }
 
     public void ingestFilename(String filename) {
-        for(IngestorConfiguration configuration : configList) {
-
+        for(Ingestor ingestor : ingestorList) {
+            Map<String, Object> properties = ingestor.parse(filename);
+            if (properties != null) {
+                properties.put("filename", filename);
+                catalogueServiceClient.addProduct(filename+"@"+ingestor.getName(), properties);
+            }
         }
     }
 }

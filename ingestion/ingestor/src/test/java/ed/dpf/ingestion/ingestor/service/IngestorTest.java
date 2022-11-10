@@ -8,7 +8,9 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import ed.dpf.ingestion.ingestor.model.FieldToValueConfiguration;
 import ed.dpf.ingestion.ingestor.model.IngestorConfiguration;
+import ed.dpf.ingestion.ingestor.model.ValueType;
 
 class IngestorTest {
 
@@ -32,6 +34,8 @@ class IngestorTest {
     void test() {
         IngestorConfiguration configuration = new IngestorConfiguration();
         configuration.setPattern("(?<instrument>\\w+)_(?<satellite>\\w+)_(?<station>\\w+)_(?<productionTime>\\d{4}\\d{2}\\d{2}_\\d{2}\\d{2}\\d{2})_(?<orbit>\\d{5})_(?<product>\\w+)_(?<level>\\w+).(?<extension>\\w+)");
+        configuration.getFieldToValueConfMap().put("productionTime", new FieldToValueConfiguration(ValueType.DATETIME, "yyyyMMdd_HHmmss"));
+        configuration.getFieldToValueConfMap().put("orbit", new FieldToValueConfiguration(ValueType.INTEGER, null));
 
         Ingestor ingestor = new Ingestor(configuration);
         Map<String, Object> output = ingestor.parse("INST01_SAT01_STA01_20221231_001234_12345_MAP_L1.txt");

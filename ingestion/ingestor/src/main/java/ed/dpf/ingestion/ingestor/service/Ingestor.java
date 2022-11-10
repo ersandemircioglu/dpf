@@ -8,23 +8,32 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import ed.dpf.ingestion.ingestor.model.IngestorConfiguration;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class Ingestor {
+
+    private static Pattern GROUP_PATTERN = Pattern.compile("\\(\\?\\<(\\w+)\\>[^)]*\\)");
+
     private IngestorConfiguration configuration;
+    @Getter
+    private String name;
     private Pattern regex;
-    private List<String> patternGroups;
+    private List<String> groupNames;
+    private Map<String, FieldToValueParser> fieldToValueParsers;
 
     public Ingestor(IngestorConfiguration configuration) {
         this.configuration = configuration;
-        this.regex = Pattern.compile(configuration.getPattern());
-        this.patternGroups = findPatternGroups(configuration.getPattern());
+        this.name = configuration.getName();
+        this.regex = Pattern.compile(this.configuration.getPattern());
+        this.groupNames = findGroups(this.configuration.getPattern());
+        this.fieldToValueParsers = new HashMap<>();
+        this.configuration.getFieldToValueConfMap().entrySet().forEach(item -> fieldToValueParsers.put(item.getKey(), new FieldToValueParser(item.getValue())));
     }
 
-    private List<String> findPatternGroups(String pattern) {
-        Pattern groupPattern = Pattern.compile("\\(\\?\\<(\\w+)\\>[^)]*\\)");
-        Matcher matcher = groupPattern.matcher(pattern);
+    private List<String> findGroups(String pattern) {
+        Matcher matcher = GROUP_PATTERN.matcher(pattern);
         return matcher.results().map(m -> m.group(1)).collect(Collectors.toList());
     }
 
@@ -33,8 +42,14 @@ public class Ingestor {
         Matcher matcher = regex.matcher(filename);
         if(matcher.find()) {
             output = new HashMap<>();
-            for(String group : patternGroups) {
-                output.put(group, matcher.group(group));
+            for(String group : groupNames) {
+                Object value = null;
+                if(fieldToValueParsers.containsKey(group)) {
+                    value = fieldToValueParsers.get(group).parse(matcher.group(group));
+                } else {
+                    value = matcher.group(group);
+                }
+                output.put(group, value);
             }
         }
         return output;
