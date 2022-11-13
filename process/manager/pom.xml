@@ -7,8 +7,8 @@
         <version>0.0.1-SNAPSHOT</version>
         <relativePath /> <!-- lookup parent from repository -->
     </parent>
-    <groupId>ed.dpf.ingestion</groupId>
-    <artifactId>ingestor</artifactId>
+    <groupId>ed.dpf.process</groupId>
+    <artifactId>manager</artifactId>
     <version>0.0.1-SNAPSHOT</version>
 
     <dependencies>
@@ -60,7 +60,7 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
-                    <finalName>ingestion-ingestor</finalName>
+                    <finalName>process-manager</finalName>
                     <excludes>
                         <exclude>
                             <groupId>org.projectlombok</groupId>

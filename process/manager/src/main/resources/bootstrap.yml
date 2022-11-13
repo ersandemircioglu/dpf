@@ -1,0 +1,9 @@
+spring:
+  application:
+    name: process-manager
+  cloud:
+    config:
+      uri: http://localhost:8888
+      fail-fast: true
+logging:
+    config: http://localhost:8888/${spring.application.name}/default/master/logback.xml
