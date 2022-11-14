@@ -12,8 +12,9 @@ services:
 #        - ./dbdata:/opt/couchdb/data
 
 #https://stackoverflow.com/questions/63623075/how-to-run-commands-from-docker-compose-yml-to-start-couchdb#63624336
-  initializer:
+  couchdb_init:
     image: curlimages/curl
+    container_name: couchdb_init
     deploy:
       restart_policy:
         condition: on-failure

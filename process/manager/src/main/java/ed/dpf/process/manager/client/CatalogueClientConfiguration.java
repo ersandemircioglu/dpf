@@ -1,4 +1,4 @@
-package ed.dpf.ingestion.ingestor.catalogue;
+package ed.dpf.process.manager.client;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -7,7 +7,7 @@ import org.springframework.context.annotation.Configuration;
 import feign.auth.BasicAuthRequestInterceptor;
 
 @Configuration
-public class CatalogueServiceConfiguration {
+public class CatalogueClientConfiguration {
     @Value("${dpf.catalogue.username}")
     private String username;
 

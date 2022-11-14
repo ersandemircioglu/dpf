@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import ed.dpf.ingestion.ingestor.model.FieldToValueConfiguration;
 import ed.dpf.ingestion.ingestor.model.IngestorConfiguration;
 import ed.dpf.ingestion.ingestor.model.ValueType;
+import ed.dpf.ingestion.ingestor.util.Ingestor;
 
 class IngestorTest {
 

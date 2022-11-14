@@ -3,6 +3,9 @@ dpf:
     incoming_folder: ${HOME}/dpf/ingestion/incoming_dir
     queue: incoming_file_queue
     config_folder: ${HOME}/dpf/ingestion/config
+  process:
+    queue: process_queue
+    config_folder: ${HOME}/dpf/process/config
   catalogue:
     url: http://127.0.0.1:5984/
     username: admin

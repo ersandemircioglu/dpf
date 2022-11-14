@@ -1,4 +1,4 @@
-package ed.dpf.ingestion.ingestor.service;
+package ed.dpf.ingestion.ingestor.util;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
