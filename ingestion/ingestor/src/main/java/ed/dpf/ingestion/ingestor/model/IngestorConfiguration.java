@@ -8,6 +8,6 @@ import lombok.Data;
 @Data
 public class IngestorConfiguration {
     private String name;
-    private String pattern;
+    private String regex;
     private Map<String, FieldToValueConfiguration> fieldToValueConfMap = new HashMap<>();
 }

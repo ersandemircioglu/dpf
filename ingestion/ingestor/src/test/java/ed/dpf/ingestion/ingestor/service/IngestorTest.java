@@ -34,7 +34,7 @@ class IngestorTest {
     @Test
     void test() {
         IngestorConfiguration configuration = new IngestorConfiguration();
-        configuration.setPattern("(?<instrument>\\w+)_(?<satellite>\\w+)_(?<station>\\w+)_(?<productionTime>\\d{4}\\d{2}\\d{2}_\\d{2}\\d{2}\\d{2})_(?<orbit>\\d{5})_(?<product>\\w+)_(?<level>\\w+).(?<extension>\\w+)");
+        configuration.setRegex("(?<instrument>\\w+)_(?<satellite>\\w+)_(?<station>\\w+)_(?<productionTime>\\d{4}\\d{2}\\d{2}_\\d{2}\\d{2}\\d{2})_(?<orbit>\\d{5})_(?<product>\\w+)_(?<level>\\w+).(?<extension>\\w+)");
         configuration.getFieldToValueConfMap().put("productionTime", new FieldToValueConfiguration(ValueType.DATETIME, "yyyyMMdd_HHmmss"));
         configuration.getFieldToValueConfMap().put("orbit", new FieldToValueConfiguration(ValueType.INTEGER, null));
 

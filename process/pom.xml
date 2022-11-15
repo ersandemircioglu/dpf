@@ -12,5 +12,6 @@
         <module>../config</module>
         <module>../catalogue</module>
         <module>manager</module>
+        <module>processor01</module>
     </modules>
 </project>

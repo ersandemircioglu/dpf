@@ -19,15 +19,15 @@ public class Ingestor {
     private IngestorConfiguration configuration;
     @Getter
     private String name;
-    private Pattern regex;
+    private Pattern pattern;
     private List<String> groupNames;
     private Map<String, FieldToValueParser> fieldToValueParsers;
 
     public Ingestor(IngestorConfiguration configuration) {
         this.configuration = configuration;
         this.name = configuration.getName();
-        this.regex = Pattern.compile(this.configuration.getPattern());
-        this.groupNames = findGroups(this.configuration.getPattern());
+        this.pattern = Pattern.compile(this.configuration.getRegex());
+        this.groupNames = findGroups(this.configuration.getRegex());
         this.fieldToValueParsers = new HashMap<>();
         this.configuration.getFieldToValueConfMap().entrySet().forEach(item -> fieldToValueParsers.put(item.getKey(), new FieldToValueParser(item.getValue())));
     }
@@ -39,7 +39,7 @@ public class Ingestor {
 
     public Map<String, Object> parse(String filename) {
         Map<String, Object> output = null;
-        Matcher matcher = regex.matcher(filename);
+        Matcher matcher = pattern.matcher(filename);
         if(matcher.find()) {
             output = new HashMap<>();
             for(String group : groupNames) {
