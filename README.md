@@ -105,12 +105,6 @@ Following technologies are used during the development of the prototype
 
 ## System Design 
 
-**Legend**
-| Shape       | Description |
-|-------------|------------|
-| Solid  line | Event flow |
-| Dotted line | File  flow |
-
 ### Level 0
 
 The DPF system is composed of following modules:
@@ -120,61 +114,7 @@ The DPF system is composed of following modules:
 - Configuration:
 - Monitor & Control:
 
-```mermaid
-flowchart LR
-  subgraph DPF
-    direction LR
-    subgraph  
-      direction TB
-      subgraph Ingestion
-        direction LR
-        FW[File Watcher]
-        ING[Ingestor]
-      end
-      subgraph Catalogue & Archive 
-        direction LR
-        CAT[Catalogue]
-        ARC[Archive]
-      end
-      subgraph Processing
-        direction LR
-        PM[Process Manager]
-        POOL[Processor Pool]
-      end
-    end
-    subgraph Monitor & Control
-    end
-    subgraph Configuration
-    end
-  end
-```
-
-```mermaid
-flowchart TD
-  SRC[External Source]
-  subgraph DPF
-  ING[Ingestion]
-  CAT[(Catalog)]
-  ARC([Archive])
-  TM[Task Manager]
-  PROC[Processor Pool]
-  DIS[Dissemination]
-  CONF[Central Configuration]
-  MC[Monitoring & Control]
-  end
-  DST[External Destination]
-  
-  SRC -.-> ING
-  ING -.-> ARC
-  ING --> CAT
-  CAT --> TM
-  CAT --> DIS
-  TM --> PROC
-  ARC -.-> PROC
-  ARC -.-> DIS
-  PROC -.-> ING
-  DIS -..-> DST
-```
+![Level 0](/docs/level_0_system.svg)
 
 #### Ingestion
 
