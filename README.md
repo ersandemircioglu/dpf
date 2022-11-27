@@ -138,28 +138,34 @@ The ingestion module converts the unstructured input data into a structured form
 ![Level 1 - Ingestion](/docs/level_1_ingestion.svg)
 
 - **File Reception**: watches the incoming folder and when a new file is received, pushes its filename to the *Ingestion Queue*. No workload is expected on this module. Thus one instance of this module is enough. 
-- **Ingestor**: extracts a properties map from the incoming file and transfers the file and the extracted properties map to the catalogue and archive. Ingestor module parses the file name based on Ingestor configurations. It goes over the all configurations and instantiates one or more parsers when the configuration's pattern matches with the file name. After the file is successfully stored by the catalogue & archive module, it pushes the file name to the *Processing queue*. 
-  - *Ingestor Configuration Repository*: keeps filetype configurations. A file type configuration is JSON file which is interpreted by the *Ingestor* module. A sample of the filetype configuration is as follows:
-  ```json
-  {
-  "name" : "FileType01",
-  "regex" : "(?<instrument>\\w+)_(?<satellite>\\w+)_(?<productionTime>\\d{8}_\\d{6})_(?<orbit>\\d{5}).(?<extension>\\w+)",
-  "parser" : "FILENAME", 
-  "fieldToValueConfMap" : {
-    "orbit" : {
-      "valueType" : "INTEGER"
-    },
-    "productionTime" : {
-      "valueType" : "DATETIME",
-      "format" : "yyyyMMdd_HHmmss"
+- **Ingestor**: extracts a properties map from the incoming file and transfers the file and the extracted properties to the *Catalogue and Archive* module. Ingestor component parses the file name based on Ingestor configurations. It goes over the all configurations and instantiates one or more parsers when the configuration's pattern matches with the file name. After the file is successfully stored by the catalogue & archive module, it pushes the file name to the *Processing queue*. 
+  - *Ingestor Configuration Repository*: keeps configuration files. A configuration file is a JSON file which is interpreted by the *Ingestor* module. A configuration file looks like as follows:
+    ```json
+    {
+    "name" : "FileType01",
+    "regex" : "(?<instrument>\\w+)_(?<satellite>\\w+)_(?<productionTime>\\d{8}_\\d{6})_(?<orbit>\\d{5}).(?<extension>\\w+)",
+    "parser" : "FILENAME", 
+    "fieldToValueConfMap" : {
+      "orbit" : {
+        "valueType" : "INTEGER"
+      },
+      "productionTime" : {
+        "valueType" : "DATETIME",
+        "format" : "yyyyMMdd_HHmmss"
+      }
     }
-  }
-}
-  ```
-  - *Filename parser*
-  - *Metadata parser*
+    ```
+    | Configuration Key | Description | 
+    |--|--|
+    | name | Descriptive name of the configuration. The value of this key is also used in the catalogue key |
+    | regex | Regex of the file name. If the file name matches with this regex, Ingestor instantiates the configured parser |
+    | parser | **FILENAME** : Filename parser <br> **METADATA** : Metadata Parser |
+    | parser dependent configuration section| **Filename parser** : Defines the actual data type of the regex groups. If a group is not defined, String is used as default. <br> **Metadata parser** : The class name of the metadata parser. This class is instantiated during runtime with Java's Reflection API |
 
-#### Ingestion
+  - *Filename parser*: Uses the groups defined in the regex. it can also convert string values to numeric or date-time data types.
+  - *Metadata parser*: Some files store their metadata in their header section, like GeoTIFF or in another file like a metadata XML. Depend on the input file format, custom metadata parsers can be implemented.  
+
+#### Processing
 
 ![Level 1 - Processing](/docs/level_1_processing.svg)
 
@@ -175,4 +181,3 @@ The ingestion module converts the unstructured input data into a structured form
 
 - [ ] If the MQ goes down, all components fail. A fallback mechanism is needed when the MQ goes down .
   - https://stackoverflow.com/questions/58110868/fallback-mechanism-when-rabbitmq-goes-down 
-- [ ]  
