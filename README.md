@@ -169,8 +169,40 @@ The ingestion module converts the unstructured input data into a structured form
 
 ![Level 1 - Processing](/docs/level_1_processing.svg)
 
-- **Process Manager**
-  - *Processor Definitions*
+- **Process Manager**: listens the *Processing Queue* and initiates processors based on the processor configurations. Process Manager component checks the filename with the regex in a processor configuration. If it finds a match, it instantiates the processor. A file can be processed more than one different processors simultaneously. 
+  - *Processor Configuration Repository*: keeps configuration files. A configuration file is a JSON file which is interpreted by the *Process Manager* module. A configuration file looks like as follows:
+    ```json
+    {
+    "name" : "Processor_01",
+    "regex" : "INST01_SAT01_(?<productionTime>\\d{8}_\\d{6})_(?<orbit>\\d{5}).EXT01",
+    "processorType" : "DOCKER",
+    "processor" : "processor01:latest", 
+    "inputs" : {
+      "input01" : {
+        "mandatory" : "yes",
+        "selector": {
+            "productionTime": {"$gt": "2021-01-31T23:12:34.000"},
+            "type": "TLE",
+            "instrument": "INST01"
+        }
+      },
+      "input02" : {
+        "mandatory" : "yes",
+        "selector": {
+            "productionTime": {"$eq": "2021-01-31T23:12:34.000"},
+            "type": "FileType01",
+            "instrument": "INST01"
+        }
+      }
+    }
+    ```
+    | Configuration Key | Description | 
+    |--|--|
+    | name | Descriptive name of the configuration. |
+    | regex | Regex of the file name. If the file name matches with this regex, Process Manager instantiates the configured processor |
+    | processorType | DOCKER, HTC, STREAM |
+    | processor | Identifier of the processor, the value interpreted based on the processorType. for example, for DOCKER type, it is the image name |
+    | inputs | inputs for the processor. Process Manager queries the Catalogue with given "selector" query and copies files from archive to the shared file system.  |
 - **Processor Pool**
   - *Containers*
   - *HTC*
