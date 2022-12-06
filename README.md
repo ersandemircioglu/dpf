@@ -128,14 +128,14 @@ The DPF system is composed of following modules:
 - Configuration
 - Monitor & Control
 
-![Level 0](/docs/level_0_system.svg)
+![Level 0](./docs/level_0_system.svg)
 
 ### Level 1
 #### Ingestion
 
 The ingestion module converts the unstructured input data into a structured format that can be processed by processors.
 
-![Level 1 - Ingestion](/docs/level_1_ingestion.svg)
+![Level 1 - Ingestion](./docs/level_1_ingestion.svg)
 
 - **File Reception**: watches the incoming folder and when a new file is received, pushes its filename to the *Ingestion Queue*. No workload is expected on this module. Thus one instance of this module is enough. 
 - **Ingestor**: extracts a properties map from the incoming file and transfers the file and the extracted properties to the *Catalogue and Archive* module. Ingestor component parses the file name based on Ingestor configurations. It goes over the all configurations and instantiates one or more parsers when the configuration's pattern matches with the file name. After the file is successfully stored by the catalogue & archive module, it pushes the file name to the *Processing queue*. 
@@ -167,7 +167,7 @@ The ingestion module converts the unstructured input data into a structured form
 
 #### Processing
 
-![Level 1 - Processing](/docs/level_1_processing.svg)
+![Level 1 - Processing](./docs/level_1_processing.svg)
 
 - **Process Manager**: listens the *Processing Queue* and initiates processors based on the processor configurations. Process Manager component checks the filename with the regex in a processor configuration. If it finds a match, it instantiates the processor. A file can be processed more than one different processors simultaneously. 
   - *Processor Configuration Repository*: keeps configuration files. A configuration file is a JSON file which is interpreted by the *Process Manager* module. A configuration file looks like as follows:
@@ -204,8 +204,10 @@ The ingestion module converts the unstructured input data into a structured form
     | processor | Identifier of the processor, the value interpreted based on the processorType. for example, for DOCKER type, it is the image name |
     | inputs | inputs for the processor. Process Manager queries the Catalogue with given "selector" query and copies files from archive to the shared file system.  |
 - **Processor Pool**
-  - *Containers*
-  - *HTC*
+  - *Containers*: If the processing application is a Commercially available off-the-shelf (COTS) item and has dependency to specific version of OS and/or libraries, containerizing simplifies the integration and maintenance procedures. An image of the application can be prepared and tested independently. Only following requirements have to be satisfied
+    - The application has to configured to use predefined input, output and auxiliary folders. These folders are mapped to folders on the shared file system by the process manager during the initialization of a container. 
+    - The image must contain a script or executable which can be triggered after the creation of the container. 
+  - *HTC*: 
   - *Stream Processors*
 
 
