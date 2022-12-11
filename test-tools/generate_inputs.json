@@ -1,0 +1,40 @@
+{
+    "satellites": [
+        {
+            "name": "SAT01",
+            "initial_orbit": 1234,
+            "orbit_duration": 90 
+        },
+        {
+            "name": "SAT02",
+            "initial_orbit": 34567,
+            "orbit_duration": 90 
+        }
+    ],
+    "file_templates": [
+        {
+            "name": "FileType01",
+            "filename_template": "INST01_SAT01_GS01_{production_time:%Y%m%d_%H%M%S}_{orbit:05d}_RAW_L0.ext",
+            "variables": {
+                "production_time": "simulation_time()",
+                "orbit": "orbit(\"SAT01\")"
+            },
+            "frequency": 360,
+            "first_pass": 10,
+            "pass_duration": 15,
+            "segment_duration": 3  
+        }, 
+        {
+            "name": "FileType02",
+            "filename_template": "INST01_SAT02_GS02_{production_time:%Y%m%d_%H%M%S}_{orbit:05d}_RAW_L0.ext2",
+            "variables": {
+                "production_time": "simulation_time()",
+                "orbit": "orbit(\"SAT02\")"
+            },
+            "frequency": 360,
+            "first_pass": 3,
+            "pass_duration": 15,
+            "segment_duration": 3  
+        }
+    ] 
+}
