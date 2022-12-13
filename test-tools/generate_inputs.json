@@ -11,30 +11,56 @@
             "orbit_duration": 90 
         }
     ],
-    "file_templates": [
+    "sat_data_templates": [
         {
             "name": "FileType01",
-            "filename_template": "INST01_SAT01_GS01_{production_time:%Y%m%d_%H%M%S}_{orbit:05d}_RAW_L0.ext",
+            "filename_template": "INST01_SAT01_GS01_{sensing_start:%Y%m%d%H%M%S}_{sensing_stop:%Y%m%d%H%M%S}_{orbit:05d}.raw",
             "variables": {
-                "production_time": "simulation_time()",
+                "sensing_start": "simulation_time() - datetime.timedelta(minutes=3)",
+                "sensing_stop": "simulation_time()",
                 "orbit": "orbit(\"SAT01\")"
             },
-            "frequency": 360,
-            "first_pass": 10,
+            "frequency": 120,
+            "first_pass": 3,
             "pass_duration": 15,
-            "segment_duration": 3  
+            "segment_duration": 3,
+            "generate_end_file": true  
         }, 
         {
             "name": "FileType02",
-            "filename_template": "INST01_SAT02_GS02_{production_time:%Y%m%d_%H%M%S}_{orbit:05d}_RAW_L0.ext2",
+            "filename_template": "INST01_SAT02_GS02_{sensing_start:%Y%m%d%H%M%S}_{sensing_stop:%Y%m%d%H%M%S}_{orbit:05d}.raw",
             "variables": {
-                "production_time": "simulation_time()",
+                "sensing_start": "simulation_time() - datetime.timedelta(minutes=1)",
+                "sensing_stop": "simulation_time()",
                 "orbit": "orbit(\"SAT02\")"
             },
-            "frequency": 360,
-            "first_pass": 3,
-            "pass_duration": 15,
-            "segment_duration": 3  
+            "frequency": 180,
+            "first_pass": 5,
+            "pass_duration": 10,
+            "segment_duration": 1,
+            "generate_end_file": true
+        }
+    ], 
+    "aux_data_templates": [
+        {
+            "name": "TLE",
+            "filename_template": "tle_{production_time:%Y%m%d%H%M%S}.txt",
+            "variables": {
+                "production_time": "simulation_time()"
+            },
+            "frequency": 60,
+            "first_generation": 0
+        }, 
+        {
+            "name": "Forcast",
+            "filename_template": "forecast_{validity_start:%Y%m%d%H%M%S}_{validity_stop:%Y%m%d%H%M%S}_{production_time:%Y%m%d%H%M%S}.bin",
+            "variables": {
+                "validity_start": "simulation_time()",
+                "validity_stop": "simulation_time() + datetime.timedelta(minutes=60)",
+                "production_time": "simulation_time()"
+            },
+            "frequency": 15,
+            "first_generation": 0
         }
     ] 
 }

@@ -54,34 +54,41 @@ class Satellite:
         if self.orbit_start_time + datetime.timedelta(minutes=self.orbit_duration) < current_simulation_time:
             self.orbit_start_time = current_simulation_time
             self.orbit += 1
-            print("new Orbit {} {}".format(self.name, self.orbit))
+            print(f"New Orbit for {self.name}: {self.orbit}")
 
     def getOrbitNumber(self):
         return self.orbit
     
-class Template:
+class SatDataTemplate:
     def __init__(self, template_conf, simulation_start_time):
+        self.name = template_conf["name"]
         self.filename_template = template_conf["filename_template"]
         self.variables = template_conf["variables"]
         self.frequency = template_conf["frequency"]
         self.first_pass = template_conf["first_pass"]
         self.pass_duration = template_conf["pass_duration"]
         self.segment_duration = template_conf["segment_duration"]
+        self.generate_end_file = template_conf["generate_end_file"]
         self.pass_start = simulation_start_time + datetime.timedelta(minutes=self.first_pass)
         self.pass_end = self.pass_start + datetime.timedelta(minutes=self.pass_duration)
         self.last_generation_time = self.pass_start
         
-        
     def generate(self, current_simulation_time):
         if self.__is_in_pass(current_simulation_time) \
             and self.last_generation_time + datetime.timedelta(minutes=self.segment_duration) <= current_simulation_time:
-            dict = {}
-            for key, value in self.variables.items():
-                dict[key] = eval(value)
-            s = self.filename_template.format(**dict)
-            self.last_generation_time = current_simulation_time
-            print(s)
-        
+            self.__generate_file(current_simulation_time, False)
+
+    def __generate_file(self, current_simulation_time, is_end_file):
+        dict = {}
+        for key, value in self.variables.items():
+            dict[key] = eval(value)
+        s = self.filename_template.format(**dict)
+        self.last_generation_time = current_simulation_time
+        if is_end_file:
+            createFile(s+".END")
+        else:
+            createFile(s)
+            
     def __is_in_pass(self, current_simulation_time):
         if self.pass_start <= current_simulation_time and current_simulation_time <= self.pass_end:
             return True
@@ -89,9 +96,36 @@ class Template:
             self.pass_start = current_simulation_time + datetime.timedelta(minutes=self.frequency)
             self.pass_end = self.pass_start + datetime.timedelta(minutes=self.pass_duration)
             self.last_generation_time = self.pass_start
-            print("new Pass {} {}".format(self.pass_start, self.pass_end))
+            if self.generate_end_file:
+                self.__generate_file(current_simulation_time, True)
+            print(f"Next Pass for {self.name}: {self.pass_start}-{self.pass_end}")
         return False
 
+class AuxDataTemplate:
+    def __init__(self, template_conf, simulation_start_time):
+        self.filename_template = template_conf["filename_template"]
+        self.variables = template_conf["variables"]
+        self.frequency = template_conf["frequency"]
+        self.first_generation = template_conf["first_generation"]
+        self.next_generation_time = simulation_start_time + datetime.timedelta(minutes=self.first_generation)
+        
+    def generate(self, current_simulation_time):
+        if self.next_generation_time <= current_simulation_time:
+            dict = {}
+            for key, value in self.variables.items():
+                dict[key] = eval(value)
+            s = self.filename_template.format(**dict)
+            self.next_generation_time = current_simulation_time + datetime.timedelta(minutes=self.frequency)
+            createFile(s)
+        
+def createFile(filename):
+    print(filename)
+    try:
+        with open(f"{dest_folder}/{filename}", 'w') as f:
+            f.write(filename)
+    except FileNotFoundError:
+        print(f"Failed to create {filename}")
+    
 def orbit(sat):
     satellite = satellites[sat]
     return satellite.getOrbitNumber()
@@ -108,10 +142,12 @@ def parse_conf(conf_path):
 def start(args):
     global global_simulation_time
     global satellites
+    global dest_folder
     
     print(args.verbose)
     print(args.config)
     print(args.dest)
+    dest_folder = args.dest
     global_simulation_time = datetime.datetime.now()
     conf = parse_conf(args.config)
     
@@ -119,17 +155,26 @@ def start(args):
         satellite = Satellite(satellite_conf, global_simulation_time)
         satellites[satellite.name] = satellite
     
-    template_list = []
-    for template_conf in conf["file_templates"]:
-        template_list.append(Template(template_conf, global_simulation_time))
+    sat_data_template_list = []
+    for template_conf in conf["sat_data_templates"]:
+        sat_data_template_list.append(SatDataTemplate(template_conf, global_simulation_time))
     
+    aux_data_template_list = []
+    for template_conf in conf["aux_data_templates"]:
+        aux_data_template_list.append(AuxDataTemplate(template_conf, global_simulation_time))
+
+
     for time_tick in range(60*24):
-        print(global_simulation_time)
+        print(f"Simulation time : {global_simulation_time}")
         for satellite in satellites.values():
             satellite.propagate(global_simulation_time)
   
-        for template in template_list:
-            template.generate(global_simulation_time)
+        for sat_data_template in sat_data_template_list:
+            sat_data_template.generate(global_simulation_time)
+        
+        for aux_data_template in aux_data_template_list:
+            aux_data_template.generate(global_simulation_time)
+        
         global_simulation_time = global_simulation_time + datetime.timedelta(minutes=1)
         time.sleep(1)
     
