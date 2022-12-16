@@ -1,5 +1,6 @@
 package ed.dpf.ingestion.watcher;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
@@ -21,14 +22,14 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class FileWatcher {
 
-    @Value("${dpf.ingestion.incoming_folder}")
-    private String incomingFolder;
+    @Value("${dpf.ingestion.directory}")
+    private String ingestionDirectory;
 
     @Value("${dpf.ingestion.queue}")
-    private String queueName;
+    private String ingestionQueueName;
 
     @Autowired
-    private RabbitTemplate template;
+    private RabbitTemplate ingestionQueue;
 
     public FileWatcher() {
         run();
@@ -42,18 +43,22 @@ public class FileWatcher {
                 try {
                     WatchService watchService = FileSystems.getDefault().newWatchService();
 
-                    Path path = Paths.get(incomingFolder);
+                    Path path = Paths.get(ingestionDirectory);
 
                     path.register(watchService, StandardWatchEventKinds.ENTRY_CREATE);
 
                     WatchKey key;
                     while ((key = watchService.take()) != null) {
                         for (WatchEvent<?> event : key.pollEvents()) {
-                            log.info("#FILE_RECEIVED# \"{}\"", event.context());
-                            try {
-                                template.convertAndSend(queueName, event.context().toString());
-                            } catch (AmqpException e) {
-                                log.error("#PROCESS_FAILED# \"{}\" #MSG# MQ is not reachable: \"{}\"",event.context(), e.getMessage(), e);
+                            if (event.context() != null) {
+                                File incomingFile = new File(ingestionDirectory, String.valueOf(event.context()));
+                                log.info("#FILE_RECEIVED# \"{}\"", incomingFile.getAbsolutePath());
+                                try {
+                                    ingestionQueue.convertAndSend(ingestionQueueName, incomingFile.getAbsolutePath());
+                                } catch (AmqpException e) {
+                                    log.error("#FILE_RECEPTION_FAILED# \"{}\" #MSG# \"MQ is not reachable: {}\"",
+                                            incomingFile.getAbsolutePath(), e.getMessage(), e);
+                                }
                             }
                         }
                         key.reset();
@@ -64,7 +69,8 @@ public class FileWatcher {
 
             }
         });
-        thread.setUncaughtExceptionHandler((th, e) -> log.error("FileWatcher Thread is stopped (uncaughtException)", e));
+        thread.setUncaughtExceptionHandler(
+                (th, e) -> log.error("FileWatcher Thread is stopped (uncaughtException)", e));
         thread.start();
     }
 

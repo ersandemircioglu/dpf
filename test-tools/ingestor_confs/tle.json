@@ -1,0 +1,11 @@
+{
+  "name" : "TLE",
+  "regex" : "tle_(?<productionTime>\\d{4}\\d{2}\\d{2}\\d{2}\\d{2}\\d{2}).(?<extension>\\w+)",
+  "parser" : "FILENAME",
+  "fieldToValueConfMap" : {
+    "productionTime" : {
+      "valueType" : "DATETIME",
+      "format" : "yyyyMMddHHmmss"
+    }
+  }
+}

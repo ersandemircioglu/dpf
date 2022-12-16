@@ -13,7 +13,7 @@
     ],
     "sat_data_templates": [
         {
-            "name": "FileType01",
+            "name": "FileType01_SAT01",
             "filename_template": "INST01_SAT01_GS01_{sensing_start:%Y%m%d%H%M%S}_{sensing_stop:%Y%m%d%H%M%S}_{orbit:05d}.raw",
             "variables": {
                 "sensing_start": "simulation_time() - datetime.timedelta(minutes=3)",
@@ -27,7 +27,7 @@
             "generate_end_file": true  
         }, 
         {
-            "name": "FileType02",
+            "name": "FileType01_SAT02",
             "filename_template": "INST01_SAT02_GS02_{sensing_start:%Y%m%d%H%M%S}_{sensing_stop:%Y%m%d%H%M%S}_{orbit:05d}.raw",
             "variables": {
                 "sensing_start": "simulation_time() - datetime.timedelta(minutes=1)",
@@ -52,7 +52,7 @@
             "first_generation": 0
         }, 
         {
-            "name": "Forcast",
+            "name": "forcast",
             "filename_template": "forecast_{validity_start:%Y%m%d%H%M%S}_{validity_stop:%Y%m%d%H%M%S}_{production_time:%Y%m%d%H%M%S}.bin",
             "variables": {
                 "validity_start": "simulation_time()",

@@ -9,5 +9,6 @@ import lombok.Data;
 public class IngestorConfiguration {
     private String name;
     private String regex;
+    private ParserType parser;
     private Map<String, FieldToValueConfiguration> fieldToValueConfMap = new HashMap<>();
 }

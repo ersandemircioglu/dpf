@@ -8,6 +8,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import ed.dpf.ingestion.ingestor.model.IngestorConfiguration;
+import ed.dpf.ingestion.ingestor.model.ParserType;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
@@ -19,6 +20,8 @@ public class Ingestor {
     private IngestorConfiguration configuration;
     @Getter
     private String name;
+    @Getter
+    private ParserType parserType;
     private Pattern pattern;
     private List<String> groupNames;
     private Map<String, FieldToValueParser> fieldToValueParsers;
@@ -26,10 +29,12 @@ public class Ingestor {
     public Ingestor(IngestorConfiguration configuration) {
         this.configuration = configuration;
         this.name = configuration.getName();
+        this.parserType = configuration.getParser();
         this.pattern = Pattern.compile(this.configuration.getRegex());
         this.groupNames = findGroups(this.configuration.getRegex());
         this.fieldToValueParsers = new HashMap<>();
-        this.configuration.getFieldToValueConfMap().entrySet().forEach(item -> fieldToValueParsers.put(item.getKey(), new FieldToValueParser(item.getValue())));
+        this.configuration.getFieldToValueConfMap().entrySet()
+                .forEach(item -> fieldToValueParsers.put(item.getKey(), new FieldToValueParser(item.getValue())));
     }
 
     private List<String> findGroups(String pattern) {
@@ -40,11 +45,11 @@ public class Ingestor {
     public Map<String, Object> parse(String filename) {
         Map<String, Object> output = null;
         Matcher matcher = pattern.matcher(filename);
-        if(matcher.find()) {
+        if (matcher.find()) {
             output = new HashMap<>();
-            for(String group : groupNames) {
+            for (String group : groupNames) {
                 Object value = null;
-                if(fieldToValueParsers.containsKey(group)) {
+                if (fieldToValueParsers.containsKey(group)) {
                     value = fieldToValueParsers.get(group).parse(matcher.group(group));
                 } else {
                     value = matcher.group(group);

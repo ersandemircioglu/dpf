@@ -17,8 +17,8 @@ public class IngestionQueueListener {
     private FileIngestor fileIngestor;
 
     @RabbitHandler
-    public void receiveMessage(String message) {
-        log.info(message);
-        fileIngestor.ingestFilename(message);
+    public void receiveMessage(String incomingFileAbsolutePath) {
+        log.info("#FILE_RECEIVED# \"{}\"", incomingFileAbsolutePath);
+        fileIngestor.processFile(incomingFileAbsolutePath);
     }
 }
