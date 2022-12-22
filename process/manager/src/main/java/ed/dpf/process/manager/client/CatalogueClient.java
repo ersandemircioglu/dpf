@@ -1,5 +1,7 @@
 package ed.dpf.process.manager.client;
 
+import java.util.Map;
+
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -13,4 +15,7 @@ public interface CatalogueClient {
 
     @RequestMapping(method = RequestMethod.POST, value = "/product_database/_find", consumes = MediaType.APPLICATION_JSON_VALUE)
     String findProduct(@RequestBody String searchValue);
+
+    @RequestMapping(method = RequestMethod.POST, value = "/product_database/_find")
+    String findProduct(Map<String, Object> fields);
 }

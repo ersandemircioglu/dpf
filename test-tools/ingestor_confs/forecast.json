@@ -1,0 +1,19 @@
+{
+  "name" : "forecast",
+  "regex" : "forecast_(?<validityStart>\\d{14})_(?<validityStop>\\d{14})_(?<productionTime>\\d{14}).(?<extension>\\w+)",
+  "parser" : "FILENAME",
+  "fieldToValueConfMap" : {
+    "validityStart" : {
+      "valueType" : "DATETIME",
+      "format" : "yyyyMMddHHmmss"
+    }, 
+    "validityStop" : {
+      "valueType" : "DATETIME",
+      "format" : "yyyyMMddHHmmss"
+    },
+    "productionTime" : {
+      "valueType" : "DATETIME",
+      "format" : "yyyyMMddHHmmss"
+    }
+  }
+}

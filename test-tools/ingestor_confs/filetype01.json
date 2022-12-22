@@ -1,6 +1,6 @@
 {
   "name" : "FileType01",
-  "regex" : "(?<instrument>\\w+)_(?<satellite>\\w+)_(?<station>\\w+)_(?<sensingStart>\\d{4}\\d{2}\\d{2}\\d{2}\\d{2}\\d{2})_(?<sensingStop>\\d{4}\\d{2}\\d{2}\\d{2}\\d{2}\\d{2})_(?<orbit>\\d{5}).(?<extension>\\w+)",
+  "regex" : "(?<instrument>\\w+)_(?<satellite>\\w+)_(?<station>\\w+)_(?<sensingStart>\\d{14})_(?<sensingStop>\\d{14})_(?<orbit>\\d{5}).(?<extension>\\w+)",
   "parser" : "FILENAME",
   "fieldToValueConfMap" : {
     "orbit" : {

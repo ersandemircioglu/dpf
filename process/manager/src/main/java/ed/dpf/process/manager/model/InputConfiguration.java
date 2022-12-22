@@ -11,5 +11,5 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class InputConfiguration {
     private boolean mandatory;
-    private Map<String, Object> selector;
+    private Map<String, Object> query;
 }

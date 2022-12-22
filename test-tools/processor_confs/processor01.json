@@ -1,0 +1,23 @@
+{
+  "name" : "Processor_01",
+  "filter" : {
+    "type": "FileType01",
+    "station": "GS01",
+    "instrument": "INST01",
+    "satellite": "SAT01",
+    "extension": "raw_END"
+  },
+  "processorType" : "DOCKER",
+  "processor" : "processor01:latest", 
+  "inputs" : {
+    "input01" : {
+      "mandatory" : "true",
+      "query" : {
+          "selector": {
+              "productionTime": {"$lt": "{$sensingStart}"},
+              "type": "TLE"
+        }
+      }
+    }
+  }
+}

@@ -19,8 +19,8 @@ public class ProcessQueueListener {
     private ProcessManager processManager;
 
     @RabbitHandler
-    public void receiveMessage(Map<String, Object> message) {
-        message.entrySet().stream().forEach(e -> System.out.println(e.getKey()+"="+e.getValue()));
-        processManager.process(message);
+    public void receiveMessage(Map<String, Object> record) {
+        log.info("#RECORD_RECEIVED# \"{}\"", record.get("filename"));
+        processManager.process(record);
     }
 }

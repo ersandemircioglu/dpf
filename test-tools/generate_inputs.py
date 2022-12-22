@@ -85,7 +85,7 @@ class SatDataTemplate:
         s = self.filename_template.format(**dict)
         self.last_generation_time = current_simulation_time
         if is_end_file:
-            createFile(s+".END")
+            createFile(s+"_END")
         else:
             createFile(s)
             

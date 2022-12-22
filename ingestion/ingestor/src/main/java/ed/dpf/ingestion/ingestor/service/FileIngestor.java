@@ -19,8 +19,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import ed.dpf.ingestion.ingestor.client.ArchiveClient;
 import ed.dpf.ingestion.ingestor.client.CatalogueClient;
 import ed.dpf.ingestion.ingestor.model.IngestorConfiguration;
-import ed.dpf.ingestion.ingestor.model.ParserType;
 import ed.dpf.ingestion.ingestor.util.Ingestor;
+import ed.dpf.ingestion.ingestor.util.IngestorFactory;
 import lombok.extern.slf4j.Slf4j;
 
 @Service
@@ -55,11 +55,12 @@ public class FileIngestor {
     private void readConfigurationFiles() {
         File configFolder = new File(configFolderPath);
         ObjectMapper objectMapper = new ObjectMapper();
+        IngestorFactory ingestorFactory = new IngestorFactory();
         for (File configFile : configFolder.listFiles()) {
             try {
                 log.info("Config file \"{}\" is being parsed.", configFile.getAbsolutePath());
                 IngestorConfiguration configuration = objectMapper.readValue(configFile, IngestorConfiguration.class);
-                ingestorList.add(new Ingestor(configuration));
+                ingestorList.add(ingestorFactory.getIngestor(configuration));
             } catch (IOException e) {
                 log.error("Config file \"{}\" cannot be parsed.", configFile.getAbsolutePath(), e);
             }
@@ -69,27 +70,21 @@ public class FileIngestor {
     public void processFile(String incomingFileAbsolutePath) {
         File incomingFile = new File(incomingFileAbsolutePath);
         String archivePath = archiveClient.archive(incomingFileAbsolutePath);
-        String filename = incomingFile.getName();
-
-        for (Ingestor ingestor : ingestorList) {
-            if (ingestor.getParserType() == ParserType.FILENAME) {
-                ingestFilename(ingestor, filename, archivePath);
-            }
-        }
+        ingestorList.stream().filter(i -> i.matches(incomingFile))
+                .forEach(i -> catalogue(incomingFile, archivePath, i.parse(incomingFile)));
     }
 
-    private void ingestFilename(Ingestor ingestor, String filename, String archivePath) {
-        Map<String, Object> properties = ingestor.parse(filename);
+    private void catalogue(File incomingFile, String archivePath, Map<String, Object> properties) {
+        String filename = incomingFile.getName();
         if (properties != null) {
-            properties.put("filename", filename);
             properties.put("archive_path", archivePath);
-            properties.put("type", ingestor.getName());
-            catalogueClient.addProduct(filename + "@" + ingestor.getName(), properties);
+            catalogueClient.addProduct(filename + "@" + properties.get("type"), properties);
+            log.info("#FILE_CATALOGUED# \"{}\"", incomingFile.getAbsolutePath());
             try {
                 template.convertAndSend(processQueueName, properties);
             } catch (AmqpException e) {
                 log.error("#PROCESS_FAILED# \"{}\" #MSG# \"MQ is not reachable: {}\"",
-                        filename + "@" + ingestor.getName(), e.getMessage(), e);
+                        filename + "@" + properties.get("type"), e.getMessage(), e);
             }
         }
     }
