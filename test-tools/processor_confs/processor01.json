@@ -14,8 +14,21 @@
       "mandatory" : "true",
       "query" : {
           "selector": {
-              "productionTime": {"$lt": "{$sensingStart}"},
+              "productionTime": {"$lt": "@sensingStart"},
               "type": "TLE"
+        }
+      }
+    }, 
+    "input02" : {
+      "mandatory" : "true",
+      "query" : {
+          "selector": {
+              "orbit": "@orbit",
+              "type": "@type",
+              "station": "@station",
+              "instrument": "@instrument",
+              "satellite": "@satellite",
+              "extension": "raw"
         }
       }
     }

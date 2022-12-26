@@ -173,25 +173,38 @@ The ingestion module converts the unstructured input data into a structured form
   - *Processor Configuration Repository*: keeps configuration files. A configuration file is a JSON file which is interpreted by the *Process Manager* module. A configuration file looks like as follows:
     ```json
     {
-    "name" : "Processor_01",
-    "regex" : "INST01_SAT01_(?<productionTime>\\d{8}_\\d{6})_(?<orbit>\\d{5}).EXT01",
-    "processorType" : "DOCKER",
-    "processor" : "processor01:latest", 
-    "inputs" : {
-      "input01" : {
-        "mandatory" : "yes",
-        "selector": {
-            "productionTime": {"$gt": "2021-01-31T23:12:34.000"},
-            "type": "TLE",
-            "instrument": "INST01"
-        }
+      "name" : "Processor_01",
+      "filter" : {
+        "type": "FileType01",
+        "station": "GS01",
+        "instrument": "INST01",
+        "satellite": "SAT01",
+        "extension": "raw_END"
       },
-      "input02" : {
-        "mandatory" : "yes",
-        "selector": {
-            "productionTime": {"$eq": "2021-01-31T23:12:34.000"},
-            "type": "FileType01",
-            "instrument": "INST01"
+      "processorType" : "DOCKER",
+      "processor" : "processor01:latest", 
+      "inputs" : {
+        "input01" : {
+          "mandatory" : "true",
+          "query" : {
+              "selector": {
+                  "productionTime": {"$lt": "@sensingStart"},
+                  "type": "TLE"
+            }
+          }
+        }, 
+        "input02" : {
+          "mandatory" : "true",
+          "query" : {
+              "selector": {
+                  "orbit": "@orbit",
+                  "type": "@type",
+                  "station": "@station",
+                  "instrument": "@instrument",
+                  "satellite": "@satellite",
+                  "extension": "raw"
+            }
+          }
         }
       }
     }
@@ -199,10 +212,10 @@ The ingestion module converts the unstructured input data into a structured form
     | Configuration Key | Description | 
     |--|--|
     | name | Descriptive name of the configuration. |
-    | regex | Regex of the file name. If the file name matches with this regex, Process Manager instantiates the configured processor |
+    | filter | Filters the incoming processing request based on the record properties. If all properties are satisfied, the processor starts to collect input files from catalogue |
     | processorType | DOCKER, HTC, STREAM |
     | processor | Identifier of the processor, the value interpreted based on the processorType. for example, for DOCKER type, it is the image name |
-    | inputs | inputs for the processor. Process Manager queries the Catalogue with given "selector" query and copies files from archive to the shared file system.  |
+    | inputs | inputs for the processor. Process Manager queries the Catalogue with given "selector" query and copies files from archive to the shared file system. User can use the record's properties in this query with '@' prefix. |
 - **Processor Pool**
   - *Containers*: If the processing application is a Commercially available off-the-shelf (COTS) item and has dependency to specific version of OS and/or libraries, containerizing simplifies the integration and maintenance procedures. An image of the application can be prepared and tested independently. Only following requirements have to be satisfied
     - The application has to configured to use predefined input, output and auxiliary folders. These folders are mapped to folders on the shared file system by the process manager during the initialization of a container. 

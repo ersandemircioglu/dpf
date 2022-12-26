@@ -2,7 +2,6 @@ package ed.dpf.process.manager.service.util;
 
 import java.util.Map;
 
-import ed.dpf.process.manager.client.CatalogueClient;
 import ed.dpf.process.manager.model.ProcessorConfiguration;
 
 public class HTCProcessor extends Processor {
@@ -13,7 +12,7 @@ public class HTCProcessor extends Processor {
     }
 
     @Override
-    public void process(CatalogueClient catalogueClient, Map<String, Object> record) {
+    public void process(Map<String, Object> record) {
         // TODO Auto-generated method stub
 
     }

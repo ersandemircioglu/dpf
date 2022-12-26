@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import ed.dpf.process.manager.client.ArchiveClient;
 import ed.dpf.process.manager.client.CatalogueClient;
 import ed.dpf.process.manager.model.ProcessorConfiguration;
 import ed.dpf.process.manager.service.util.Processor;
@@ -25,8 +26,14 @@ public class ProcessManager {
     @Value("${dpf.process.config-folder}")
     private String configFolderPath;
 
+    @Value("${dpf.process.shared-folder}")
+    private String sharedFolderPath;
+
     @Autowired
     CatalogueClient catalogueClient;
+
+    @Autowired
+    ArchiveClient archiveClient;
 
     private List<Processor> processorList = new ArrayList<>();
 
@@ -54,6 +61,6 @@ public class ProcessManager {
     }
 
     public void process(Map<String, Object> record) {
-        processorList.stream().filter(p -> p.matches(record)).forEach(p -> p.process(catalogueClient, record));
+        processorList.stream().filter(p -> p.matches(record)).forEach(p -> p.process(record));
     }
 }
