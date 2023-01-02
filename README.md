@@ -1,13 +1,23 @@
 # Data Processing Framework (DPF)
 
-DPF is a platform which provides a common way to process data from multiple Earth Observation (EO) missions. To be able to provide multi mission support, following points should be taken under consideration: 
+DPF is a platform which provides a common way to process data from multiple Earth Observation (EO) missions. To be able to provide multi mission support, following points have been taken under consideration: 
 
 - **Data Frequency and Load**: The data frequency of an EO mission depends on the orbit of the satellite(s) and the location of the ground station(s). Lets assume that there is one ground station located in mid latitudes. 
   - *GEO and MEO satellites*: the satellite is almost always visibly by the ground station and can provide data continuously. The load on the data processing system can be estimated and dynamic scalability mostly not needed. 
   - *LEO satellites*: the satellite visibility is limited and mostly it has 2 or 3 passes a day over the ground station each takes around 10-20 minutes. The satellite has to dump all its data during the pass and the data must be processed in a predefined time window (timeliness). In order to use computational resources efficiently, dynamic scalability of the system is important.  
   - *Reprocessing of the data*: for some cases, like validation of a new processing algorithm, calibration or quality assessment of products, reprocessing of data is needed. The processing system has to handle vast amount of data in short time. 
-- **Variance of input data**: Mainly because of instrument differences, different missions produce different products. The processing system should be able to accept different input types, while providing a common experience to the user of the system.
-- **Variance of data processing applications**: Some missions use a set of applications which are designed only for that mission. These applications are mostly static and HW/SW dependencies are not frequently changed. However some missions use Commercially available off-the-shelf (COTS) products. These applications are subject to regular updates and sometimes their HW/SW dependencies are changed.    
+- **Variance of input data**: Mainly because of instrument differences, different missions produce different products. The processing system should be able to accept different input types while providing a common experience to the user of the system.
+- **Variance of data processing applications**: Some missions use a set of applications which are designed only for that mission. These applications are mostly static and HW/SW dependencies are not frequently changed. However some missions use Commercially available off-the-shelf (COTS) products. These applications are subject to regular updates and sometimes their HW/SW dependencies are changed. 
+
+## Concept
+
+
+![System Concept](./docs/system_concept.svg)
+
+
+## Scope
+
+This implementation is a proof of concept. Some modules have not been fully implemented or COTS applications are used instead.
 
 ## Architectural Decisions
 
@@ -107,7 +117,7 @@ DPF doesn't contain a process orchestration module. When a product is generated 
 
 One of the challenges with an event-driven system is the monitoring of the production. What happens if a consumer gets the event from the queue and dies while processing it? Centralized Monitoring module collects all logs from the other modules and components. In case of an error occurred, centralized monitoring module can take action and re-trigger the event again.  
 
-## Technologies used in the prototype
+## Technologies used in this system implementation (POC)
 
 Following technologies are used during the development of the prototype
 
