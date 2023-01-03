@@ -11,8 +11,18 @@ DPF is a platform which provides a common way to process data from multiple Eart
 
 ## Concept
 
+- **Simple one direction data flow**: The system processes an incoming data and ingests the outputs again to process further. 
+- **No workflow definition**: Instead of defining and maintaining complex workflows, users can focus on each processing task. By this way, 
+  - Processing steps are isolated from each other and rest of the system. This reduces the debugging or maintaining effort. 
+  - Checkpoint mechanism is implemented implicitly. In case of a failure, the failed processing step can be run individually. 
+- **Scalability**: 
+  - Each processing step can be scaled up independently.
+  - For an incoming data, more than one different processors can be triggered in parallel. 
 
 ![System Concept](./docs/system_concept.svg)
+
+### Sample Run
+
 
 
 ## Scope
