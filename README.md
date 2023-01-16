@@ -23,7 +23,11 @@ DPF is a platform which provides a common way to process data from multiple Eart
 
 ### Sample Run
 
+#### Auxiliary Data
+![Sample Run - Auxiliary](./docs/sample_run_aux.svg)
 
+#### Mission Data
+![Sample Run - Raw Data](./docs/sample_run_raw.svg)
 
 ## Scope
 
