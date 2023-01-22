@@ -1,0 +1,35 @@
+version: '3.1'
+
+services:
+  config:
+    image: ed.dpf/config
+    container_name: config
+    ports:
+      - "8888:8888"
+  
+  watcher:
+    image: ed.dpf.ingestion/watcher
+    container_name: watcher
+    depends_on:
+      config:
+        condition: service_healthy
+    volumes:
+      - ${HOME}/dpf:/dpf
+
+  ingestor:
+    image: ed.dpf.ingestion/ingestor
+    container_name: ingestor
+    depends_on:
+      config:
+        condition: service_healthy
+    volumes:
+      - ${HOME}/dpf:/dpf
+
+  manager:
+    image: ed.dpf.process/manager
+    container_name: manager
+    depends_on:
+      config:
+        condition: service_healthy
+    volumes:
+      - ${HOME}/dpf:/dpf
