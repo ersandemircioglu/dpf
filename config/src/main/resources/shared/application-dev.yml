@@ -1,0 +1,15 @@
+dpf:
+  ingestion:
+    directory: ${HOME}/dpf/ingestion/incoming_dir
+    queue: incoming_file_queue
+    config-folder: ${HOME}/dpf/ingestion/config
+  process:
+    queue: process_queue
+    config-folder: ${HOME}/dpf/process/config
+    shared-folder: ${HOME}/dpf/process/shared
+  catalogue:
+    url: localhost:5984/
+    username: admin
+    password: password
+  archive:
+    directory: ${HOME}/dpf/archive

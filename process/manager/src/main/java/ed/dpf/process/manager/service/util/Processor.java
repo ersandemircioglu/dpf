@@ -30,17 +30,18 @@ public abstract class Processor {
         return true;
     }
 
-    public void retrieveInputs(CatalogueClient catalogueClient, Map<String, Object> record, ArchiveClient archiveClient,
+    public File retrieveInputs(CatalogueClient catalogueClient, Map<String, Object> record, ArchiveClient archiveClient,
             String sharedFolderPath) {
+        File inputFolder = new File(sharedFolderPath, configuration.getName() + "_" + System.currentTimeMillis());
+        inputFolder.mkdirs();
         for (InputConfiguration inputConfiguration : configuration.getInputs().values()) {
             Map<String, Object> query = injectQueryArguments(record, inputConfiguration.getQuery());
             CatalogueQueryResult queryResult = catalogueClient.findProduct(query);
-            File destFolder = new File(sharedFolderPath, configuration.getName());
-            destFolder.mkdirs();
             for (CatalogueDoc doc : queryResult.getDocs()) {
-                archiveClient.retrieve(doc.getArchive_path(), destFolder.getAbsolutePath());
+                archiveClient.retrieve(doc.getArchive_path(), inputFolder.getAbsolutePath());
             }
         }
+        return inputFolder;
     }
 
     private Map<String, Object> injectQueryArguments(Map<String, Object> record, Map<String, Object> template) {
@@ -58,6 +59,6 @@ public abstract class Processor {
         return query;
     }
 
-    public abstract void process(Map<String, Object> record);
+    public abstract void process(Map<String, Object> record, String inputFolder, String outputFolder);
 
 }

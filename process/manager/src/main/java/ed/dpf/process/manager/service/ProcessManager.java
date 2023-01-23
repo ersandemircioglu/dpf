@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 
 import javax.annotation.PostConstruct;
 
@@ -28,6 +29,9 @@ public class ProcessManager {
 
     @Value("${dpf.process.shared-folder}")
     private String sharedFolderPath;
+
+    @Value("${dpf.ingestion.directory}")
+    private String ingestionDirectory;
 
     @Autowired
     CatalogueClient catalogueClient;
@@ -61,6 +65,12 @@ public class ProcessManager {
     }
 
     public void process(Map<String, Object> record) {
-        processorList.stream().filter(p -> p.matches(record)).forEach(p -> p.process(record));
+        processorList.stream().filter(p -> p.matches(record)).forEach(new Consumer<Processor>() {
+            @Override
+            public void accept(Processor p) {
+                File inputFolder = p.retrieveInputs(catalogueClient, record, archiveClient, sharedFolderPath);
+                p.process(record, inputFolder.getAbsolutePath(), ingestionDirectory);
+            }
+        });
     }
 }

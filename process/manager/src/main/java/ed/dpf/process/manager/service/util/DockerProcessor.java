@@ -13,8 +13,10 @@ public class DockerProcessor extends Processor {
     }
 
     @Override
-    public void process(Map<String, Object> record) {
+    public void process(Map<String, Object> record, String inputFolder, String outputFolder) {
         log.info("#RECORD_PROCESSING# \"{}\"", record.get("filename"));
         record.entrySet().stream().forEach(e -> System.out.println(e.getKey() + "=" + e.getValue()));
+//        ContainerManager containerManager = new ContainerManager();
+//        containerManager.start(configuration.getProcessor(), inputFolder, outputFolder);
     }
 }

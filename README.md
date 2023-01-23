@@ -247,6 +247,18 @@ The ingestion module converts the unstructured input data into a structured form
   - *HTC*: 
   - *Stream Processors*
 
+## How to Run
+
+```
+#LOCAL_GIT_FOLDER#/dpf/test-tools$ cp -R folder_structure/* ${HOME}/
+#LOCAL_GIT_FOLDER#/dpf$ mvn clean install 
+#LOCAL_GIT_FOLDER#/dpf$ docker-compose -f common/docker-compose.yml -f catalogue/docker-compose.yml -f docker-compose.yml up
+
+#LOCAL_GIT_FOLDER#/dpf/test-tools$ ./generate_inputs.py -c generate_inputs.json -d ${HOME}/dpf/ingestion/incoming_dir
+
+#LOCAL_GIT_FOLDER#/dpf$ docker-compose -f common/docker-compose.yml -f catalogue/docker-compose.yml -f docker-compose.yml down
+
+```
 
 ## Open Points
 

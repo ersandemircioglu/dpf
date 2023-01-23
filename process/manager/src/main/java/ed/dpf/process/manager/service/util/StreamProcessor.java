@@ -12,7 +12,7 @@ public class StreamProcessor extends Processor {
     }
 
     @Override
-    public void process(Map<String, Object> record) {
+    public void process(Map<String, Object> record, String inputFolder, String outputFolder) {
         // TODO Auto-generated method stub
 
     }

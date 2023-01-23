@@ -8,7 +8,7 @@
     "extension": "raw_END"
   },
   "processorType" : "DOCKER",
-  "processor" : "processor01:latest", 
+  "processor" : "ed.dpf.process/processor01:latest", 
   "inputs" : {
     "input01" : {
       "mandatory" : "true",
